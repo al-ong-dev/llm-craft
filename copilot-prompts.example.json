@@ -1,0 +1,13 @@
+{
+  "tasks": [
+    {
+      "name": "standup-summary",
+      "page_url": "https://github.com/copilot",
+      "prompt": "Summarize yesterday's commits into concise standup bullets."
+    },
+    {
+      "name": "test-gap-check",
+      "prompt": "Given my recent code changes, list likely test gaps and edge cases."
+    }
+  ]
+}
