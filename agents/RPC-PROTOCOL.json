@@ -1,0 +1,273 @@
+{
+  "version": "1.0",
+  "name": "Multi-Agent RPC Protocol",
+  "description": "Inter-agent communication protocol for consultations",
+  "timestamp": "2026-05-29",
+
+  "overview": {
+    "purpose": "Allow agents to consult each other for opinions without blocking main workflow",
+    "pattern": "Synchronous RPC with timeout protection",
+    "typical_latency": "30-60 seconds per consultation",
+    "max_depth": 2,
+    "call_graph_acyclic": true
+  },
+
+  "message_types": {
+    "consultation_request": {
+      "description": "Agent A asks Agent B for opinion",
+      "schema": {
+        "type": "string (consultation_request)",
+        "id": "string (consultation-{workflow_id}-{random})",
+        "from_agent": "string (consultant)",
+        "to_agent": "string (advisor)",
+        "workflow_id": "string (uuid)",
+        "phase": "integer (1-9)",
+        "question": "string (specific question)",
+        "context": "object (optional task context)",
+        "depth": "integer (0-2)",
+        "timeout": "integer (seconds, default 60)",
+        "timestamp": "ISO8601"
+      },
+      "example": {
+        "type": "consultation_request",
+        "id": "cons-wf-20260529-001-5234",
+        "from_agent": "implementer",
+        "to_agent": "sentinel",
+        "workflow_id": "wf-20260529-001",
+        "phase": 3,
+        "question": "Is JWT + refresh token approach secure for OAuth 2.0?",
+        "context": {
+          "task": "Implement OAuth 2.0",
+          "approach": "JWT with refresh tokens",
+          "endpoints": ["/auth/token", "/auth/refresh"]
+        },
+        "depth": 0,
+        "timeout": 60,
+        "timestamp": "2026-05-29T14:30:00Z"
+      }
+    },
+
+    "consultation_response": {
+      "description": "Agent B responds with opinion",
+      "schema": {
+        "type": "string (consultation_response)",
+        "id": "string (matches request id)",
+        "from_agent": "string (advisor)",
+        "to_agent": "string (consultant)",
+        "question": "string (echoed from request)",
+        "status": "string (success|failed|timeout)",
+        "opinion": "string (brief response, <500 chars)",
+        "concern_level": "string (low|medium|high|critical)",
+        "recommendation": "string (proceed|escalate|request_changes|blocked)",
+        "issues": "array (specific concerns found)",
+        "fixes": "array (suggested fixes)",
+        "timestamp": "ISO8601"
+      },
+      "example": {
+        "type": "consultation_response",
+        "id": "cons-wf-20260529-001-5234",
+        "from_agent": "sentinel",
+        "to_agent": "implementer",
+        "question": "Is JWT + refresh token approach secure for OAuth 2.0?",
+        "status": "success",
+        "opinion": "Approach is secure with recommended additions",
+        "concern_level": "medium",
+        "recommendation": "proceed_with_fixes",
+        "issues": [
+          "Missing rate limiting on token endpoint",
+          "No token blacklist mechanism for logout"
+        ],
+        "fixes": [
+          "Add 10 requests/min limit to /auth/token",
+          "Implement token blacklist with TTL"
+        ],
+        "timestamp": "2026-05-29T14:30:30Z"
+      }
+    }
+  },
+
+  "consultation_call_graph": {
+    "researcher": {
+      "can_consult": ["implementer", "sentinel"],
+      "consultation_types": [
+        "feasibility (Is this buildable?)",
+        "security (Any red flags?)"
+      ]
+    },
+    "implementer": {
+      "can_consult": ["lens", "sentinel", "anchor"],
+      "consultation_types": [
+        "quality (Test coverage OK?)",
+        "security (Is this secure?)",
+        "deployment (Can we deploy this?)"
+      ]
+    },
+    "lens": {
+      "can_consult": ["implementer", "anchor"],
+      "consultation_types": [
+        "feasibility (Can you fix this quality issue?)",
+        "impact (Will this affect production?)"
+      ]
+    },
+    "sentinel": {
+      "can_consult": ["lens", "implementer", "anchor"],
+      "consultation_types": [
+        "quality (Quality implication of security fix?)",
+        "feasibility (Can you mitigate this?)",
+        "operations (Operational security risk?)"
+      ]
+    },
+    "anchor": {
+      "can_consult": ["sentinel", "lens", "implementer"],
+      "consultation_types": [
+        "security (Security posture?)",
+        "quality (Quality impact?)",
+        "feasibility (Technically feasible?)"
+      ]
+    }
+  },
+
+  "protocol_rules": {
+    "no_circular_calls": {
+      "description": "Prevent A→B→A deadlocks",
+      "implementation": "Track consultation chain in /tmp/consultation_chain_{workflow_id}.log",
+      "example": "If Implementer consults Sentinel, Sentinel cannot consult Implementer in response"
+    },
+    "max_depth_2": {
+      "description": "Limit consultation nesting to prevent infinite loops",
+      "implementation": "Increment depth counter, reject if depth > 2",
+      "example": "A→B (depth=0) → B→C (depth=1) → C→A (depth=2, rejected)"
+    },
+    "timeout_protection": {
+      "description": "Force response within timeout period",
+      "implementation": "Kill consultation if no response after timeout seconds",
+      "default_timeout": 60,
+      "max_timeout": 120
+    },
+    "synchronous": {
+      "description": "Consulting agent waits for response before continuing",
+      "note": "Used for short consultations (opinion gathering), not full analysis"
+    }
+  },
+
+  "concern_levels": {
+    "low": "Minor issue, proceed with awareness",
+    "medium": "Addressable concern, recommend fixes",
+    "high": "Significant issue, request changes",
+    "critical": "Blocking issue, recommend escalation"
+  },
+
+  "recommendations": {
+    "proceed": "No concerns, approve",
+    "proceed_with_fixes": "Concerns addressable, proceed with specific fixes",
+    "request_changes": "Concerns require changes, revise and resubmit",
+    "escalate": "Concerns significant, escalate for human review",
+    "blocked": "Blocking concern, cannot proceed"
+  },
+
+  "implementation_example": {
+    "phase": 3,
+    "workflow": "Implement OAuth 2.0",
+    "step_by_step": [
+      {
+        "step": 1,
+        "action": "Implementer drafts plan",
+        "thinks": "I should consult Sentinel about security"
+      },
+      {
+        "step": 2,
+        "action": "Implementer calls: consult-agent.sh --from implementer --to sentinel --question '...'",
+        "creates_request": {
+          "from_agent": "implementer",
+          "to_agent": "sentinel",
+          "question": "Is JWT + refresh token secure?"
+        }
+      },
+      {
+        "step": 3,
+        "action": "RPC handler checks: circular? depth? valid agents?",
+        "checks": ["Not circular (Sentinel wasn't in chain)", "Depth=0 (OK)", "Both valid agents (OK)"]
+      },
+      {
+        "step": 4,
+        "action": "Sentinel rapidly assesses (30 sec)",
+        "uses": "Fast LLM model (Haiku not Sonnet) + brief response template"
+      },
+      {
+        "step": 5,
+        "action": "Sentinel responds",
+        "response": {
+          "opinion": "Approach secure with additions",
+          "concern_level": "medium",
+          "recommendation": "proceed_with_fixes",
+          "issues": ["Add rate limiting"]
+        }
+      },
+      {
+        "step": 6,
+        "action": "Implementer receives response",
+        "updates_plan": "Add rate limiting to token endpoint"
+      },
+      {
+        "step": 7,
+        "action": "Implementer submits plan to Coordinator",
+        "note": "Now with Sentinel input baked in, higher quality"
+      },
+      {
+        "step": 8,
+        "action": "Phase 5 (Sentinel security review)",
+        "result": "No blockers (already addressed in Phase 3 consultation)"
+      }
+    ]
+  },
+
+  "error_handling": {
+    "timeout": {
+      "description": "No response after timeout_sec",
+      "response": {
+        "status": "timeout",
+        "recommendation": "request_changes",
+        "reason": "Consultation timed out, assume caution needed"
+      }
+    },
+    "invalid_agent": {
+      "description": "From or To agent not recognized",
+      "response": {
+        "status": "failed",
+        "error": "invalid_agent",
+        "reason": "Agent must be one of: coordinator, researcher, implementer, lens, sentinel, anchor"
+      }
+    },
+    "circular_call": {
+      "description": "Detected A→B→A pattern",
+      "response": {
+        "status": "failed",
+        "error": "circular_call_prevented",
+        "reason": "To prevent deadlocks, circular consultations not allowed"
+      }
+    },
+    "max_depth_exceeded": {
+      "description": "Consultation depth > 2",
+      "response": {
+        "status": "failed",
+        "error": "max_depth_exceeded",
+        "reason": "Consultation nesting limited to prevent infinite loops"
+      }
+    }
+  },
+
+  "logging": {
+    "location": "workflow-logs/{workflow_id}-consultations.jsonl",
+    "format": "JSON Lines (one JSON object per line)",
+    "includes": ["consultation requests", "consultation responses", "errors", "timeouts"],
+    "enables": ["Audit trail of agent consultations", "Debugging decision flows", "Replay workflow reasoning"]
+  },
+
+  "implementation_status": {
+    "phase_4_5": "✅ RPC protocol spec defined, basic handler created",
+    "phase_4_6": "⏳ LLM integration will power actual responses",
+    "phase_4_5_beta": "✅ Circular call prevention implemented",
+    "phase_4_5_beta": "✅ Depth limiting implemented",
+    "phase_4_5_beta": "✅ Request/Response logging implemented"
+  }
+}

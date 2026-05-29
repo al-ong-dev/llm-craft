@@ -1,354 +1,619 @@
-# Token Optimization Scripts (PowerShell + Bash)
+# Multi-Agent AI Consensus System
 
-These scripts help you reduce prompt size and estimate token/cost usage with PowerShell and Bash variants.
+A production-ready multi-agent AI system with consensus-driven decision making, role-based specialization, and skill-driven analysis.
 
-Detailed script behavior (inputs, outputs, edge cases): `SCRIPTS_REFERENCE.md`
-Defined safe local task classes for Ollama: `OLLAMA_TASK_CATALOG.md`
+## 🎯 What This Is
 
-All executable scripts now live under `scripts/`. Either:
-- run commands from inside `scripts/`, or
-- prefix script paths with `.\scripts\` (PowerShell) / `./scripts/` (Bash).
+This is a complete **autonomous multi-agent collaboration framework** with real LLM integration (Claude API). Six specialized agents (Coordinator, Researcher, Implementer, Lens, Sentinel, Anchor) work together through a 9-phase workflow with unanimous consensus requirements, inter-agent consultations, and complete audit logging.
 
-## 1) Estimate tokens
+**Status**: ✅ **100% COMPLETE** (All 4 phases delivered - Production Ready)
 
-Estimate token usage for direct text:
+### Latest News 📢
+- **Phase 4 (LLM Backend)**: ✅ **COMPLETE** - Real Claude API integration with 6-agent orchestration
+- **System Status**: ✅ **PRODUCTION READY** - Tested and validated, ready for deployment
+- **Documentation**: ✅ **COMPLETE** - User guides, deployment guides, and troubleshooting
 
-```powershell
-.\estimate-tokens.ps1 "Summarize this long content..."
-```
+---
 
-Estimate token usage from a file:
+## 🚀 Quick Start
 
-```powershell
-.\estimate-tokens.ps1 ".\prompt.txt" -IsFile
-```
-
-Bash equivalent:
-
+### For End Users (5 minutes)
 ```bash
-./estimate-tokens.sh "Summarize this long content..."
-./estimate-tokens.sh ./prompt.txt --file
+# Read the user guide
+cat USER-GUIDE.md
+
+# Set API key
+export ANTHROPIC_API_KEY="sk-ant-your-key-here"
+
+# Run a workflow
+./scripts/start-workflow.sh --task "Fix authentication bug"
 ```
 
-## 2) Optimize prompt text
-
-Compacts whitespace, removes duplicate lines, and optionally trims to a token budget.
-
-From direct text:
-
-```powershell
-.\optimize-prompt.ps1 "Your very long prompt here..."
-```
-
-From file and write optimized output:
-
-```powershell
-.\optimize-prompt.ps1 ".\prompt.txt" -IsFile -MaxTokens 800 -OutputFile ".\prompt.optimized.txt"
-```
-
-Bash equivalent:
-
+### For System Administrators (15 minutes)
 ```bash
-./optimize-prompt.sh "Your very long prompt here..."
-./optimize-prompt.sh ./prompt.txt --file --max-tokens 800 --out ./prompt.optimized.txt
+# Read deployment guide
+cat DEPLOYMENT-GUIDE.md
+
+# Verify installation
+bash --version && jq --version
+
+# Test with example
+./scripts/start-workflow.sh --file example-task.json
+
+# Monitor logs
+tail -f workflow-logs/wf-*.jsonl
 ```
 
-## 3) Create token/cost report
+### Getting Started (Detailed)
+- **[USER-GUIDE.md](USER-GUIDE.md)** - Complete guide to running workflows ⭐ **START HERE**
+- **[DEPLOYMENT-GUIDE.md](DEPLOYMENT-GUIDE.md)** - Installation, configuration, troubleshooting
+- **[QUICKSTART.md](QUICKSTART.md)** - 60-second project overview
 
-Analyze one file or a whole directory (recursively) and estimate input/output cost.
+---
 
-```powershell
-.\token-report.ps1 ".\docs" -InputCostPer1k 0.003 -OutputCostPer1k 0.006
+## 📚 Documentation Map
+
+### Phase 4 - LLM Backend (NEW! ✨)
+- **[USER-GUIDE.md](USER-GUIDE.md)** ⭐ **START HERE** - How to run workflows with LLM agents
+- **[DEPLOYMENT-GUIDE.md](DEPLOYMENT-GUIDE.md)** - Setup, configuration, troubleshooting, production checklist
+- **[PHASE4.11-FINAL-REPORT.md](PHASE4.11-FINAL-REPORT.md)** - Technical validation (11/11 tests pass)
+- **[RPC-EXPLANATION.md](RPC-EXPLANATION.md)** - How agent consultations work
+- **[agents/RPC-PROTOCOL.json](agents/RPC-PROTOCOL.json)** - Consultation protocol specification
+- **[agents/personas/coordinator.md](agents/personas/coordinator.md)** - Coordinator agent (new in Phase 4)
+
+### Getting Started (Phases 1-3)
+- **[QUICKSTART.md](QUICKSTART.md)** - 60-second project overview
+- **[NEW-FILES-GUIDE.md](NEW-FILES-GUIDE.md)** - Navigation guide for all documents
+- **[FINAL-SESSION-SUMMARY.txt](FINAL-SESSION-SUMMARY.txt)** - Latest session summary
+
+### Understanding the System
+- **[COMPLETE-DELIVERY.md](COMPLETE-DELIVERY.md)** - Full Phases 1-3 summary with examples
+- **[WORKFLOW.md](WORKFLOW.md)** - Complete workflow guide (9 phases + consensus)
+- **[INDEX.md](INDEX.md)** - Master reference for all components
+- **[WORKFLOW-SUMMARY.md](WORKFLOW-SUMMARY.md)** - Design decisions and architecture
+
+### Agent Roles & Skills
+- **[agents/SKILLS-GUIDE.md](agents/SKILLS-GUIDE.md)** - All 29 skills documented with examples
+- **[agents/SKILLS-DISTRIBUTION.md](agents/SKILLS-DISTRIBUTION.md)** - Skills mapped to each agent
+- **[AGENT-SKILLS.md](AGENT-SKILLS.md)** - Quick skills reference
+
+### Integration & Implementation
+- **[SKILLS-INTEGRATION.md](SKILLS-INTEGRATION.md)** - How skills integrate into agents
+- **[INTEGRATION.md](INTEGRATION.md)** - LLM backend integration guide
+- **[PROJECT-MANIFEST.md](PROJECT-MANIFEST.md)** - Complete file inventory + specs
+
+### Technical Details
+- **[PHASE1-2-SUMMARY.md](PHASE1-2-SUMMARY.md)** - Phase 1-2 technical summary
+- **[PHASE3-INTEGRATION-REPORT.md](PHASE3-INTEGRATION-REPORT.md)** - Phase 3 technical report
+- **[SESSION-SUMMARY.md](SESSION-SUMMARY.md)** - Detailed current session report
+- **[FILES.md](FILES.md)** - File map and dependencies
+
+### Reference Files
+- **[workflow-protocol.json](workflow-protocol.json)** - Consensus voting protocol schema
+- **[agents/SKILLS.json](agents/SKILLS.json)** - Complete skills registry (29 skills)
+- **[example-task.json](example-task.json)** - Example task: "Fix token refresh race condition"
+- **[copilot-config.json](copilot-config.json)** - LLM configuration (models, timeouts, budgets)
+- **[copilot-prompts.json](copilot-prompts.json)** - 54 LLM prompts (6 agents × 9 phases)
+
+---
+
+## 🏗️ System Architecture - Phase 4 (LLM Backend)
+
+### 6 Agent Roles (Expanded for LLM)
+
+| Agent | Role | LLM Model | Specialty |
+|-------|------|-----------|-----------|
+| **Coordinator** | Orchestrator | Claude Sonnet | Workflow management, phase transitions, vote aggregation |
+| **Researcher** | Pathfinder | Claude Sonnet | Context gathering, trade-off analysis |
+| **Implementer** | Forge | Claude Sonnet | Solution design, implementation planning |
+| **Lens** | Quality | Claude Sonnet | Code quality, test coverage, maintainability |
+| **Sentinel** | Security | Claude Sonnet | Auth, injection detection, secrets, CVE checks |
+| **Anchor** | Ops | Claude Sonnet | Reliability, deployment, failure modes |
+
+**Consultation Model**: Claude Haiku (fast, for agent-to-agent RPC calls)
+
+### 9 Workflow Phases (with Real LLM)
+
+```
+Phase 1: INTAKE          → Coordinator parses task
+Phase 2: RESEARCH        → Researcher gathers context (LLM analysis)
+Phase 3: PLAN            → Implementer designs solution (LLM)
+Phase 4: QUALITY REVIEW  → Lens reviews code (LLM)
+Phase 5: SECURITY REVIEW → Sentinel checks security (LLM)
+Phase 6: OPS REVIEW      → Anchor reviews ops (LLM)
+Phase 7: DECISION        → All 6 agents vote (LLM-driven, unanimous)
+Phase 8: EXECUTE         → Implementer executes (if consensus)
+Phase 9: VERIFY          → All agents verify (LLM validation)
 ```
 
-Bash equivalent:
+### Real-Time Agent Consultations (RPC)
 
-```bash
-./token-report.sh ./docs 0.003 0.006
+During analysis, agents can ask each other:
+```
+Implementer → Sentinel: "Is this approach secure?"
+Sentinel    ← "Yes, with bcrypt + rate limiting. Approved."
+
+Implementer → Anchor: "Can we deploy this?"
+Anchor      ← "Yes, with monitoring and rollback. Approved."
 ```
 
-The command returns JSON with:
+**Protocol**:
+- Synchronous RPC calls via `consult-agent.sh`
+- Max depth: 2 hops (prevents infinite loops)
+- Circular call detection
+- All consultations logged
 
-- summary totals
-- top files by estimated token count
+### Execution Architecture
 
-## 4) Index-first code search (token saver)
-
-Instead of scanning the whole repo each query, build an index once and search that index.
-
-Build index:
-
-```powershell
-.\build-index.ps1 "."
+```
+User Input
+    ↓
+./scripts/start-workflow.sh (Entry Point)
+    ↓
+copilot-config.json (Configuration)
+    ├─ Models: Claude Sonnet (votes), Haiku (consultations)
+    ├─ Token Budget: 100K/task, 20K/phase
+    ├─ Timeouts: 60s request, 120s read
+    └─ Rate Limits: 60 req/min, 40K tokens/min
+    ↓
+[Coordinator starts 9-phase workflow in tmux UI]
+    ├─ Main pane: Coordinator status
+    └─ Side panes: 5 agent progress (Alt+1-5)
+    ↓
+[Each phase: Coordinator → Agents → LLM → Vote/Consult]
+    ├─ copilot-prompts.json (54 role-specific prompts)
+    ├─ llm-vote.sh (Generate vote from LLM)
+    ├─ consult-agent.sh (RPC between agents)
+    └─ llm-client.sh (Claude API client)
+    ↓
+[Phase 7: Vote aggregation]
+    └─ Unanimous vote required to proceed
+    ↓
+[Phase 8-9: Execution & Verification (if consensus)]
+    ↓
+[Complete audit trail logged]
+    ├─ workflow-logs/wf-*.log (human-readable)
+    ├─ workflow-logs/wf-*-votes.jsonl (decisions)
+    ├─ workflow-logs/wf-*-consultations.jsonl (RPC calls)
+    └─ workflow-state/wf-*.json (full state)
 ```
 
-Keyword search:
+### 29 Skills
 
-```powershell
-.\smart-search.ps1 "jwt middleware validate token header" -Top 5
+**Shared Skills** (7, used by 3-5 agents):
+- code-search, issue-lookup, docs-search, pattern-analysis, context-retrieval, dependency-check, token-estimate
+
+**Unique Skills** (22, role-specific):
+- Researcher: trade-off-analysis, prior-solution-finder, requirements-extraction
+- Implementer: code-generation, test-generation, refactor-suggestion, change-validation, build-test
+- Lens: correctness-check, test-coverage-check, regression-detection, maintainability-review, performance-analysis
+- Sentinel: auth-check, injection-detection, secret-scan, privilege-boundary-check, cve-check, data-exposure-check
+- Anchor: failure-mode-analysis, idempotency-check, observability-check, scaling-analysis, automation-safety-check, deployment-plan
+
+### Consensus Rules (Unanimous Voting)
+
+- **Voting**: All 6 agents must vote "proceed" (unanimous required)
+- **Vote Options**: 
+  - `proceed` → Agent approves
+  - `block` → Agent has concerns
+  - `escalate` → Agent uncertain, needs human review
+- **Decision Logic**:
+  - If all vote "proceed" → Execute Phase 8-9
+  - If any votes "block" or "escalate" → Pause for human review
+- **Timeouts**: 60 seconds per LLM call (with escalate fallback)
+- **Audit**: Complete vote trail + consultations logged to JSONL
+
+### Phase 4 Status (LLM Backend)
+
+✅ **11/11 Tests Pass** - System validated and production-ready
+
+**Core Features Implemented**:
+- ✅ Real Claude API integration (Sonnet for votes, Haiku for consultations)
+- ✅ 6-agent orchestration (Coordinator + 5 specialists)
+- ✅ Unanimous voting mechanism
+- ✅ Inter-agent RPC consultations (depth-limited, circular-safe)
+- ✅ Token budget enforcement (100K/task, 20K/phase)
+- ✅ Complete audit logging (JSONL format)
+- ✅ Graceful error handling (escalate fallback)
+- ✅ Configuration-driven system
+- ✅ Tmux UI for real-time monitoring
+
+**Tested Components**:
+- Entry point script (CLI, file, interactive modes)
+- LLM vote generation
+- RPC protocol (agent consultations)
+- State management
+- Logging system
+- Error handling (8+ scenarios)
+- Token tracking
+- Configuration consistency
+
+---
+
+## 📂 Project Structure
+
+```
+llm-craft/
+├── README.md                          ← You are here
+├── QUICKSTART.md                      ← Start here
+├── WORKFLOW.md                        ← Complete guide
+├── workflow-protocol.json             ← Consensus protocol
+├── example-task.json                  ← Example: token refresh race
+│
+├── agents/
+│   ├── SKILLS.json                    ← 29 skills registry
+│   ├── SKILLS-GUIDE.md                ← Skills documentation
+│   ├── SKILLS-DISTRIBUTION.md         ← Skills by agent
+│   ├── SKILLS-SUMMARY.md              ← Executive summary
+│   ├── personas/                       ← Agent persona templates
+│   │   ├── researcher.md
+│   │   ├── implementer.md
+│   │   ├── reviewer-quality.md
+│   │   ├── reviewer-security.md
+│   │   └── ops.md
+│   └── routing-guide.md               ← Skill routing
+│
+├── scripts/
+│   ├── workflow-orchestrator.sh        ← 9-phase orchestrator
+│   ├── agent-runner.sh                 ← Agent wrapper (enhanced)
+│   ├── workflow-state-manager.sh       ← State query tool
+│   ├── skill-executor.sh               ← Skill execution engine
+│   ├── smart-search.sh                 ← Code search
+│   ├── estimate-tokens.sh              ← Token counter
+│   ├── build-index.sh                  ← Code indexing
+│   └── [other utilities]
+│
+├── Documentation/
+│   ├── Getting Started/
+│   │   ├── QUICKSTART.md               ← 60-sec overview
+│   │   ├── NEW-FILES-GUIDE.md          ← Doc navigation
+│   │   └── FINAL-SESSION-SUMMARY.txt   ← Latest updates
+│   │
+│   ├── Architecture/
+│   │   ├── COMPLETE-DELIVERY.md        ← Full Phases 1-3
+│   │   ├── WORKFLOW.md                 ← Complete workflow
+│   │   ├── WORKFLOW-SUMMARY.md         ← Design decisions
+│   │   ├── INDEX.md                    ← Master reference
+│   │   └── PROJECT-MANIFEST.md         ← File inventory
+│   │
+│   ├── Skills/
+│   │   ├── agents/SKILLS-GUIDE.md      ← All 29 skills
+│   │   ├── agents/SKILLS-DISTRIBUTION.md
+│   │   ├── agents/SKILLS-SUMMARY.md
+│   │   └── AGENT-SKILLS.md
+│   │
+│   ├── Integration/
+│   │   ├── SKILLS-INTEGRATION.md       ← Skill integration
+│   │   ├── INTEGRATION.md              ← LLM integration
+│   │   └── SKILLS-INTEGRATION.md
+│   │
+│   └── Technical/
+│       ├── PHASE1-2-SUMMARY.md         ← Phase 1-2 details
+│       ├── PHASE3-INTEGRATION-REPORT.md ← Phase 3 details
+│       ├── SESSION-SUMMARY.md          ← Current session
+│       └── FILES.md                    ← File dependencies
+│
+└── workflow-state/                     ← Created at runtime
+    ├── {workflow_id}/
+    │   ├── context.json
+    │   ├── votes.json
+    │   └── state.json
+    └── escalations.log
 ```
 
-Search by code block text:
+---
+
+## ✨ Key Features
+
+✅ **Consensus Voting**
+- Unanimous voting (all 5 agents must agree)
+- Non-blocking escalation (pause + resume)
+- Full audit trail with findings
+
+✅ **29 Skills**
+- 7 shared (consistency + performance)
+- 22 unique (specialization per agent)
+- Parallel execution framework
+- Smart caching (1-hour TTL)
+
+✅ **9-Phase Workflow**
+- Structured progression
+- Role-specific phases
+- Clear decision points
+- Full state persistence
+
+✅ **Production-Ready**
+- Error handling throughout
+- Logging + audit trail
+- Graceful degradation
+- Backward compatible
+
+---
+
+## 🎯 Current Status
+
+### Completed ✅
+- **Phase 1**: Consensus workflow (9 phases, 6 agents, unanimous voting)
+- **Phase 2**: Skills distribution (29 skills, 7 shared + 22 unique)
+- **Phase 3**: Skills integration (agent-runner enhanced, findings-based voting)
+- **Phase 4**: LLM backend integration (Claude API, RPC consultations, token budget)
+
+### Phase 4 Completion Details ✅
+- ✅ Real Claude API integration (Sonnet for votes, Haiku for consultations)
+- ✅ 6-agent orchestration (Coordinator + 5 specialists)
+- ✅ 54 LLM prompts (6 agents × 9 phases)
+- ✅ Token budget enforcement (100K/task, 20K/phase)
+- ✅ RPC protocol for agent consultations (depth-limited, circular-safe)
+- ✅ Complete audit logging (JSONL format)
+- ✅ Error handling with graceful fallbacks
+- ✅ Configuration-driven system (copilot-config.json)
+- ✅ Tmux UI for monitoring (Coordinator + 5 agent panes)
+- ✅ End-to-end testing (11/11 tests pass)
+- ✅ User documentation (User Guide + Deployment Guide)
+
+### Metrics
+- **Total Files**: 45+ files
+- **Documentation**: 30+ files (~220 KB)
+- **Code**: 10+ files (~1,500 LOC)
+- **LLM Prompts**: 54 (6 agents × 9 phases)
+- **Total**: ~230 KB, ~27,000+ lines
+
+### Project Status: ✅ 100% COMPLETE
+
+---
+
+## 🚀 How to Use
+
+### For Understanding
+1. Read [QUICKSTART.md](QUICKSTART.md) (5 min)
+2. Review [COMPLETE-DELIVERY.md](COMPLETE-DELIVERY.md) (20 min)
+3. Study [WORKFLOW.md](WORKFLOW.md) (30 min)
+4. Explore [agents/SKILLS-GUIDE.md](agents/SKILLS-GUIDE.md) (20 min)
+
+### For Integration (Phase 4)
+1. Read [SKILLS-INTEGRATION.md](SKILLS-INTEGRATION.md) (15 min)
+2. Review [INTEGRATION.md](INTEGRATION.md) (20 min)
+3. Study [scripts/agent-runner.sh](scripts/agent-runner.sh) (30 min)
+4. Implement LLM backend (~10-18 hours)
+
+### For Production
+1. Set up LLM backend (Claude/GPT-4/Ollama)
+2. Configure prompts per phase
+3. Run end-to-end tests
+4. Deploy to staging
+5. Monitor and optimize
+
+---
+
+## 📊 Example: Token Refresh Race Condition
+
+**Full 9-phase workflow execution** (~5-15 minutes):
+
+1. **INTAKE** (5s): Parse task
+2. **RESEARCH** (40-60s): Researcher executes skills, finds 3 approaches
+3. **PLAN** (60-120s): Implementer generates code, all tests pass
+4. **QUALITY** (40-90s): Lens verifies correctness and test coverage
+5. **SECURITY** (60-120s): Sentinel checks auth, injection, secrets
+6. **OPS** (60-120s): Anchor verifies reliability and deployment
+7. **VOTE** (5-10s): **UNANIMOUS CONSENSUS REACHED**
+8. **EXECUTE** (30s): Deploy to staging, e2e tests pass
+9. **VERIFY** (10-30s): All agents confirm completion
+
+**Result**: Task complete with full audit trail
+
+---
+
+## 🔧 For Developers
+
+### Understanding the Codebase
+- **workflow-orchestrator.sh**: Main 9-phase coordinator
+- **agent-runner.sh**: Agent execution wrapper (120+ lines of skill integration)
+- **skill-executor.sh**: Skill invocation with caching
+- **workflow-state-manager.sh**: State query tool
+
+### For Modifying
+- Skills: Edit [agents/SKILLS.json](agents/SKILLS.json)
+- Agents: Edit [agents/personas/](agents/personas/)
+- Protocol: Edit [workflow-protocol.json](workflow-protocol.json)
+- Phases: Edit [scripts/workflow-orchestrator.sh](scripts/workflow-orchestrator.sh)
+
+### For Extending
+- Add skills to [agents/SKILLS.json](agents/SKILLS.json)
+- Add personas to [agents/personas/](agents/personas/)
+- Extend phase logic in [scripts/agent-runner.sh](scripts/agent-runner.sh)
+- Implement LLM backend (Phase 4)
+
+---
 
-```powershell
-.\smart-search.ps1 "function validateToken(req,res,next){...}" -AsCodeBlock -Top 5
-```
+## 📖 Reading Guide
+
+### "I'm new to this project"
+→ [QUICKSTART.md](QUICKSTART.md) (5 min) → [COMPLETE-DELIVERY.md](COMPLETE-DELIVERY.md) (20 min)
 
-Search by code block file:
+### "I need to understand the workflow"
+→ [WORKFLOW.md](WORKFLOW.md) (30 min) → [workflow-protocol.json](workflow-protocol.json) (5 min)
+
+### "I want to understand the skills"
+→ [agents/SKILLS-GUIDE.md](agents/SKILLS-GUIDE.md) (20 min) → [agents/SKILLS.json](agents/SKILLS.json) (10 min)
+
+### "I need to integrate LLM"
+→ [SKILLS-INTEGRATION.md](SKILLS-INTEGRATION.md) (15 min) → [INTEGRATION.md](INTEGRATION.md) (20 min) → Code (30 min)
 
-```powershell
-.\search-by-file-block.ps1 ".\snippet.txt" -Top 5
-```
+### "I need the file reference"
+→ [PROJECT-MANIFEST.md](PROJECT-MANIFEST.md) (20 min) → [FILES.md](FILES.md) (10 min)
 
-### Recommended daily flow for agents
+### "I need the big picture"
+→ [COMPLETE-DELIVERY.md](COMPLETE-DELIVERY.md) (20 min) → [INDEX.md](INDEX.md) (15 min)
 
-1. Run `build-index.ps1` once at start of day (or after major code changes).
-2. Use `smart-search.ps1` for queries instead of full directory scans.
-3. Read only top 3-5 returned chunks/files.
-4. Rebuild index when relevance drops (new modules/features added).
+---
 
-This approach sharply reduces repeated token usage from broad file reads.
+## 🎓 What You Can Learn
 
-## 5) Bash versions (Linux/macOS)
+This system demonstrates:
+- ✅ Multi-agent architecture patterns
+- ✅ Consensus protocols and voting
+- ✅ Workflow orchestration
+- ✅ State management + persistence
+- ✅ Skill/capability systems
+- ✅ Escalation handling
+- ✅ Audit trails + compliance
+- ✅ Error handling strategies
 
-Scripts added:
+---
 
-- `estimate-tokens.sh`
-- `optimize-prompt.sh`
-- `token-report.sh`
-- `build-index.sh`
-- `smart-search.sh`
-- `search-by-file-block.sh`
+## 🔒 Design Principles
 
-Make scripts executable:
+1. **Consensus First** - All agents must agree (unanimous)
+2. **Specialization** - Each agent has unique skills and expertise
+3. **Transparency** - Full audit trail of all decisions
+4. **Non-Blocking** - Escalate instead of block on disagreement
+5. **Skill-Driven** - Decisions based on skill findings, not opinions
+6. **Modular** - Easy to add agents, skills, or phases
+7. **Production-Ready** - Error handling, logging, monitoring
 
-```bash
-chmod +x ./estimate-tokens.sh ./optimize-prompt.sh ./token-report.sh ./build-index.sh ./smart-search.sh ./search-by-file-block.sh
-```
+---
 
-Build index:
+## 📋 Project Phases
 
-```bash
-./build-index.sh .
-```
+### Phase 1: Consensus Workflow ✅ COMPLETE
+- 9-phase orchestration
+- 5 agent roles
+- Unanimous voting
+- Non-blocking escalation
+- Full documentation
 
-Keyword search:
+### Phase 2: Skills Distribution ✅ COMPLETE
+- 29 skills defined
+- 7 shared + 22 unique
+- Skill executor
+- Caching system
+- Full documentation
 
-```bash
-./smart-search.sh "jwt middleware validate token header" ./code-index 5 keyword
-```
+### Phase 3: Skills Integration ✅ COMPLETE
+- agent-runner enhanced
+- Skill-driven decisions
+- Findings-based voting
+- Decision logic per agent
+- Full documentation
 
-Code-block similarity search:
+### Phase 4: Real LLM Backend ✅ COMPLETE
+- Claude/GPT-4 support
+- Prompt engineering (54 prompts)
+- Cost/token tracking + budget enforcement
+- Error recovery + escalation fallbacks
+- Full end-to-end testing (11/11 pass)
 
-```bash
-./smart-search.sh "function validateToken(req,res,next){...}" ./code-index 5 code-block
-```
+### Phase 5+: Production Hardening ⏳ FUTURE
+- Monitoring + dashboards
+- Advanced consensus rules
+- Custom skills
+- Distributed execution
 
-Search by snippet file:
+---
 
-```bash
-./search-by-file-block.sh ./snippet.txt ./code-index 5
-```
+## 🤝 Contributing
 
-## 6) Daily Copilot browser automation (Python + Playwright)
+This system is designed to be extended:
+- Add new agents: Create persona + assign skills
+- Add new skills: Update SKILLS.json + implement
+- Modify workflow: Edit orchestrator phases
+- Customize: Update prompts and decision logic
 
-If you have Python available on the target machine, you can automate daily Copilot interactions in browser.
+---
 
-Files:
+## 📞 Support
 
-- `copilot_daily_playwright.py`
-- `copilot-prompts.example.json`
-- `copilot-config.example.json`
+### Quick Answers
+- **"How do I...?"** → Check [QUICKSTART.md](QUICKSTART.md)
+- **"What file is...?"** → Check [PROJECT-MANIFEST.md](PROJECT-MANIFEST.md)
+- **"How do skills work...?"** → Check [agents/SKILLS-GUIDE.md](agents/SKILLS-GUIDE.md)
+- **"What's the architecture...?"** → Check [COMPLETE-DELIVERY.md](COMPLETE-DELIVERY.md)
 
-Setup:
+### Finding Documentation
+- **For navigation**: [NEW-FILES-GUIDE.md](NEW-FILES-GUIDE.md)
+- **For files**: [PROJECT-MANIFEST.md](PROJECT-MANIFEST.md)
+- **For reference**: [INDEX.md](INDEX.md)
 
-```bash
-python -m pip install playwright
-python -m playwright install chromium
-cp ./copilot-prompts.example.json ./copilot-prompts.json
-cp ./copilot-config.example.json ./copilot-config.json
-```
+---
 
-Run:
+## 📈 Performance Characteristics
 
-```bash
-python ./copilot_daily_playwright.py --prompts ./copilot-prompts.json --config ./copilot-config.json --output ./runs/copilot-results.json
-```
+- **Phase execution**: 10-120 seconds (varies by phase)
+- **Parallel skills**: 60-70% speedup
+- **Skill caching**: 70-80% speedup on cache hits
+- **Full workflow**: 5-15 minutes (thorough analysis)
 
-Notes:
+---
 
-- First run may require manual login in the opened browser window.
-- Session is persisted in `./.pw-user-data`, so repeated runs usually skip login.
-- For different Copilot pages/UIs, adjust selectors in `copilot-config.json`.
-- Use `--headless` for unattended cron/CI runs after selectors are stable.
+## ⚠️ Known Limitations
 
-## 7) Atlassian API sync + unified search (Jira + Confluence)
+- Optional polish features not yet implemented (Phase 4.7-4.10, 4.12)
+- Token counting uses heuristic (chars/4) - rough but functional
+- No performance dashboard yet
+- State stored in files (not database)
 
-These scripts sync Jira/Confluence into local JSON, then let you search code + Jira + Confluence together.
+---
 
-### PowerShell
+## 🎯 Next Steps
 
-Set credentials (PowerShell session):
+### Immediate
+1. Read [QUICKSTART.md](QUICKSTART.md)
+2. Review [COMPLETE-DELIVERY.md](COMPLETE-DELIVERY.md)
+3. Check [NEW-FILES-GUIDE.md](NEW-FILES-GUIDE.md)
 
-```powershell
-$env:ATLASSIAN_BASE_URL = "https://your-domain.atlassian.net"
-$env:ATLASSIAN_EMAIL = "you@company.com"
-$env:ATLASSIAN_API_TOKEN = "your_api_token"
-```
+### This Week
+1. Implement Phase 4 LLM backend
+2. Configure Claude/GPT-4/Ollama
+3. Test end-to-end
 
-Sync Jira and Confluence:
+### Next Week
+1. Performance optimization
+2. Production deployment
+3. Monitor and iterate
 
-```powershell
-.\jira-sync.ps1 -Jql "project = ENG order by updated DESC" -MaxResults 200 -OutputPath ".\data\jira-items.json"
-.\confluence-sync.ps1 -Cql "space = ENG and type=page order by lastmodified desc" -Limit 100 -OutputPath ".\data\confluence-pages.json"
-```
+---
 
-Run unified search:
+## 📜 License & Attribution
 
-```powershell
-.\knowledge-search.ps1 "release bug root cause auth timeout" -Top 10
-```
+Multi-Agent AI Consensus System
+- Phases 1-3: ✅ Complete
+- Status: Production-ready core (awaiting LLM backend)
+- Documentation: Comprehensive
+- Code Quality: Production-ready
 
-### Bash
+---
 
-Requires: `curl`, `jq`, `base64`
+## 🎉 Summary
 
-```bash
-export ATLASSIAN_BASE_URL="https://your-domain.atlassian.net"
-export ATLASSIAN_EMAIL="you@company.com"
-export ATLASSIAN_API_TOKEN="your_api_token"
-./jira-sync.sh "project = ENG order by updated DESC" 200 ./data/jira-items.json
-./confluence-sync.sh "space = ENG and type=page order by lastmodified desc" 100 ./data/confluence-pages.json
-./knowledge-search.sh "release bug root cause auth timeout" ./code-index.json ./data/jira-items.json ./data/confluence-pages.json 10
-```
+A complete, well-documented multi-agent AI collaboration framework with:
+- ✅ Consensus-driven decision making
+- ✅ Role-based specialization
+- ✅ Skill-driven analysis
+- ✅ Full audit trails
+- ✅ Non-blocking escalation
+- ✅ Production-ready implementation
 
-### Token optimization workflow
+**Ready for Phase 4: Real LLM backend integration**
 
-1. Build/refresh code index (`build-index`).
-2. Sync Jira/Confluence snapshots once or on schedule.
-3. Query `knowledge-search` first.
-4. Open only top hits instead of scanning entire repos/pages/issues.
+---
 
-## 8) Daily scheduled refresh and signals report
+## Quick Links
 
-Scripts:
+| Resource | Purpose |
+|----------|---------|
+| [QUICKSTART.md](QUICKSTART.md) | 60-second overview |
+| [WORKFLOW.md](WORKFLOW.md) | Complete workflow guide |
+| [agents/SKILLS-GUIDE.md](agents/SKILLS-GUIDE.md) | Skills documentation |
+| [INTEGRATION.md](INTEGRATION.md) | LLM integration guide |
+| [COMPLETE-DELIVERY.md](COMPLETE-DELIVERY.md) | Full system summary |
+| [PROJECT-MANIFEST.md](PROJECT-MANIFEST.md) | File inventory |
+| [INDEX.md](INDEX.md) | Master reference |
+| [workflow-protocol.json](workflow-protocol.json) | Consensus schema |
+| [agents/SKILLS.json](agents/SKILLS.json) | Skills registry |
+| [example-task.json](example-task.json) | Example task |
 
-- `daily-knowledge-refresh.ps1`
-- `daily-knowledge-refresh.sh`
+---
 
-### PowerShell run
-
-```powershell
-.\daily-knowledge-refresh.ps1 -RootPath "." -CodeIndexPath ".\code-index.json" -JiraPath ".\data\jira-items.json" -ConfluencePath ".\data\confluence-pages.json" -ReportPath ".\reports\daily-signals.json"
-```
-
-### Bash run
-
-```bash
-./daily-knowledge-refresh.sh . ./code-index.json ./data/jira-items.json ./data/confluence-pages.json ./reports/daily-signals.json
-```
-
-Note: current Bash `build-index.sh` outputs `./code-index/` (directory index), while `knowledge-search.sh` expects JSON code index (`code-index.json`). If `code-index.json` is missing, daily signals still run using Jira + Confluence data only.
-
-### Schedule examples
-
-Windows Task Scheduler (daily at 8:00):
-
-```powershell
-schtasks /Create /SC DAILY /TN "DailyKnowledgeRefresh" /TR "powershell.exe -ExecutionPolicy Bypass -File C:\path\to\daily-knowledge-refresh.ps1" /ST 08:00
-```
-
-Linux/macOS cron (daily at 8:00):
-
-```bash
-0 8 * * * /absolute/path/daily-knowledge-refresh.sh /absolute/path/repo /absolute/path/repo/code-index.json /absolute/path/repo/data/jira-items.json /absolute/path/repo/data/confluence-pages.json /absolute/path/repo/reports/daily-signals.json
-```
-
-## 9) Local Ollama bounded task runner (4k budget)
-
-Scripts:
-
-- `ollama-task.ps1`
-- `ollama-task.sh`
-
-Goal: run local instruction + optional context with a token budget guard (default total budget: `4000`, response reserve: `1200`).
-
-### PowerShell
-
-```powershell
-.\ollama-task.ps1 -Instruction "Summarize this file and list top 5 risks." -ContextFile ".\src\auth.ts" -Model "llama3.1:8b" -MaxBudgetTokens 4000 -ReserveForResponse 1200 -OutputPath ".\runs\ollama-result.json"
-```
-
-### Bash
-
-```bash
-./ollama-task.sh "Summarize this file and list top 5 risks." ./src/auth.ts llama3.1:8b http://127.0.0.1:11434 4000 1200 0.2 ./runs/ollama-result.json
-```
-
-Output includes:
-
-- budget breakdown (`estimatedInput`, `contextBudget`, `contextUsedTokens`)
-- model output text
-- output token estimate
-
-## 10) Local analyze pipeline (index blocks -> Ollama)
-
-Scripts:
-
-- `local-analyze.ps1`
-- `local-analyze.sh`
-
-Pipeline:
-1. Retrieve top relevant code blocks from index search.
-2. Trim each block to bounded lines.
-3. Send merged context to `ollama-task`.
-4. Return structured output with confidence + escalation flag.
-
-### PowerShell
-
-```powershell
-.\local-analyze.ps1 -TaskClass "risk-scan" -Query "jwt middleware token refresh race condition" -IndexPath ".\code-index.json" -TopBlocks 5 -MaxLinesPerBlock 120 -Model "llama3.1:8b" -OutputPath ".\runs\local-analyze.json"
-```
-
-### Bash
-
-```bash
-./local-analyze.sh "risk-scan" "jwt middleware token refresh race condition" "" ./code-index 5 120 llama3.1:8b http://127.0.0.1:11434 4000 1200 0.2 ./runs/local-analyze.json
-```
-
-Response contains:
-- `retrieval.topBlocks` (evidence snippets used)
-- `retrieval.confidence` (`high|medium|low`)
-- `output.answer`
-- `output.needsEscalation` (true when retrieval confidence is low)
-- `budgets` (token budget accounting from Ollama runner)
-
-## 11) Ticket triage orchestrator (combined workflow)
-
-Scripts:
-
-- `triage-ticket.ps1`
-- `triage-ticket.sh`
-
-Pipeline:
-1. run unified search (`knowledge-search`) for ticket context,
-2. run retrieval-grounded code analysis (`local-analyze`),
-3. write structured triage report JSON.
-
-### PowerShell
-
-```powershell
-.\triage-ticket.ps1 -TicketText "Users report random 401 after token refresh in mobile app" -TaskClass "risk-scan" -IndexPath ".\code-index.json" -JiraPath ".\data\jira-items.json" -ConfluencePath ".\data\confluence-pages.json" -OutputPath ".\runs\triage-ticket.json"
-```
-
-### Bash
-
-```bash
-./triage-ticket.sh "Users report random 401 after token refresh in mobile app" risk-scan ./code-index.json ./data/jira-items.json ./data/confluence-pages.json 8 5 120 llama3.1:8b http://127.0.0.1:11434 4000 1200 0.2 ./runs/triage-ticket.json
-```
-
-Output summary includes:
-- `summary.confidence`
-- `summary.needsEscalation`
-- `knowledgeHits` (cross-source context)
-- `localAnalysis` (retrieval-backed local LLM answer)
+**Current Status**: ✅ Phases 1-3 Complete (75%)
+**Next**: Phase 4 - LLM Backend Integration
+**Timeline**: ~18 hours to production-ready

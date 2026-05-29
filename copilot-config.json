@@ -1,0 +1,153 @@
+{
+  "version": "1.0",
+  "description": "LLM Provider Configuration for Phase 4 - Multi-Agent Coordinator System",
+  "last_updated": "2026-05-29",
+
+  "llm_providers": {
+    "claude": {
+      "enabled": true,
+      "priority": 1,
+      "provider": "anthropic",
+      "models": {
+        "default": "claude-3-5-sonnet-20241022",
+        "fast": "claude-3-5-haiku-20241022",
+        "powerful": "claude-3-opus-20250219"
+      },
+      "api_endpoint": "https://api.anthropic.com/v1",
+      "auth": {
+        "type": "api_key",
+        "env_var": "ANTHROPIC_API_KEY",
+        "required": true
+      },
+      "settings": {
+        "max_tokens": 4096,
+        "temperature": 0.7,
+        "top_p": 1.0,
+        "stop_sequences": []
+      },
+      "timeouts": {
+        "request_timeout_sec": 60,
+        "read_timeout_sec": 120,
+        "connect_timeout_sec": 10
+      },
+      "rate_limiting": {
+        "requests_per_minute": 60,
+        "tokens_per_minute": 40000
+      }
+    },
+
+    "github_copilot": {
+      "enabled": true,
+      "priority": 2,
+      "provider": "github",
+      "models": {
+        "default": "gpt-4-turbo",
+        "fast": "gpt-4-mini",
+        "powerful": "gpt-4-turbo-preview"
+      },
+      "api_endpoint": "https://api.github.com/models/copilot",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "GITHUB_TOKEN",
+        "required": true
+      },
+      "settings": {
+        "max_tokens": 4096,
+        "temperature": 0.7,
+        "top_p": 1.0,
+        "stop_sequences": []
+      },
+      "timeouts": {
+        "request_timeout_sec": 60,
+        "read_timeout_sec": 120,
+        "connect_timeout_sec": 10
+      },
+      "rate_limiting": {
+        "requests_per_minute": 60,
+        "tokens_per_minute": 40000
+      }
+    }
+  },
+
+  "agent_config": {
+    "coordinator": {
+      "llm_provider": "claude",
+      "model": "default",
+      "temperature": 0.7,
+      "max_tokens": 2048
+    },
+    "researcher": {
+      "llm_provider": "claude",
+      "model": "default",
+      "temperature": 0.6,
+      "max_tokens": 3000
+    },
+    "implementer": {
+      "llm_provider": "claude",
+      "model": "default",
+      "temperature": 0.5,
+      "max_tokens": 4096
+    },
+    "lens": {
+      "llm_provider": "claude",
+      "model": "default",
+      "temperature": 0.6,
+      "max_tokens": 2048
+    },
+    "sentinel": {
+      "llm_provider": "claude",
+      "model": "default",
+      "temperature": 0.5,
+      "max_tokens": 2048
+    },
+    "anchor": {
+      "llm_provider": "claude",
+      "model": "default",
+      "temperature": 0.6,
+      "max_tokens": 2048
+    }
+  },
+
+  "token_budget": {
+    "enabled": true,
+    "total_tokens_per_task": 100000,
+    "total_tokens_per_phase": 20000,
+    "warn_at_percent": 80,
+    "hard_limit": true,
+    "fallback_on_exceeded": "escalate"
+  },
+
+  "consultation_settings": {
+    "enabled": true,
+    "max_consultation_depth": 2,
+    "consultation_timeout_sec": 60,
+    "parallel_consultations": true,
+    "cache_consultations": true,
+    "cache_ttl_min": 30
+  },
+
+  "execution_settings": {
+    "parallel_phases": [2],
+    "sequential_phases": [1, 3, 4, 5, 6, 7, 8, 9],
+    "retry_on_failure": true,
+    "max_retries": 3,
+    "retry_backoff_sec": [1, 2, 5],
+    "fallback_to_escalate": true
+  },
+
+  "logging": {
+    "level": "info",
+    "log_llm_calls": true,
+    "log_consultations": true,
+    "log_votes": true,
+    "log_dir": "./workflow-logs",
+    "state_dir": "./workflow-state"
+  },
+
+  "safety": {
+    "validate_responses": true,
+    "sanitize_outputs": true,
+    "check_for_secrets": true,
+    "enforce_rate_limits": true
+  }
+}

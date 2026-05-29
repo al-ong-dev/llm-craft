@@ -1,0 +1,469 @@
+{
+  "version": "1.0",
+  "description": "Agent Skills Registry - Define capabilities for each agent",
+  
+  "skill_categories": {
+    "search": "Code/documentation/issue searching and retrieval",
+    "analysis": "Code and pattern analysis",
+    "generation": "Code/test/doc generation",
+    "validation": "Verification and checking",
+    "compliance": "Security, performance, reliability checks",
+    "planning": "Strategy and approach planning",
+    "execution": "Actual implementation and changes"
+  },
+
+  "shared_skills": [
+    {
+      "id": "code-search",
+      "category": "search",
+      "description": "Search codebase using indexing (TF-IDF or semantic)",
+      "implementation": "scripts/smart-search.sh or build-index.sh",
+      "usage": {
+        "input": "query string",
+        "output": "top N matching code blocks with line numbers",
+        "timeout": "30 seconds"
+      },
+      "used_by": ["researcher", "implementer", "reviewer-quality", "reviewer-security", "ops"]
+    },
+    {
+      "id": "issue-lookup",
+      "category": "search",
+      "description": "Find related GitHub issues, PRs, discussions",
+      "implementation": "scripts/knowledge-search.sh or github-mcp-server",
+      "usage": {
+        "input": "issue keywords/title",
+        "output": "list of related issues with context",
+        "timeout": "20 seconds"
+      },
+      "used_by": ["researcher", "reviewer-security", "ops"]
+    },
+    {
+      "id": "docs-search",
+      "category": "search",
+      "description": "Search documentation, runbooks, design docs",
+      "implementation": "scripts/knowledge-search.sh (Confluence)",
+      "usage": {
+        "input": "documentation keywords",
+        "output": "relevant docs with excerpts",
+        "timeout": "20 seconds"
+      },
+      "used_by": ["researcher", "implementer", "reviewer-quality"]
+    },
+    {
+      "id": "pattern-analysis",
+      "category": "analysis",
+      "description": "Identify existing code patterns and conventions",
+      "implementation": "grep + smart-search combined",
+      "usage": {
+        "input": "pattern description",
+        "output": "code examples showing pattern usage",
+        "timeout": "15 seconds"
+      },
+      "used_by": ["researcher", "implementer", "reviewer-quality"]
+    },
+    {
+      "id": "context-retrieval",
+      "category": "search",
+      "description": "Get full context for specific file/module",
+      "implementation": "github-mcp-server get_file_contents",
+      "usage": {
+        "input": "file path",
+        "output": "file contents + metadata",
+        "timeout": "10 seconds"
+      },
+      "used_by": ["researcher", "implementer", "reviewer-quality", "reviewer-security"]
+    },
+    {
+      "id": "dependency-check",
+      "category": "validation",
+      "description": "Analyze dependencies, versions, compatibility",
+      "implementation": "package.json/requirements.txt parsing + npm/pip",
+      "usage": {
+        "input": "file path to dependency manifest",
+        "output": "dependency list, versions, CVE warnings",
+        "timeout": "30 seconds"
+      },
+      "used_by": ["implementer", "reviewer-quality", "reviewer-security", "ops"]
+    },
+    {
+      "id": "token-estimate",
+      "category": "analysis",
+      "description": "Estimate token count for LLM context",
+      "implementation": "scripts/estimate-tokens.sh",
+      "usage": {
+        "input": "text or file",
+        "output": "token count estimate",
+        "timeout": "5 seconds"
+      },
+      "used_by": ["researcher", "implementer", "reviewer-quality", "reviewer-security", "ops"]
+    }
+  ],
+
+  "agent_skills": {
+    "researcher": {
+      "role": "Pathfinder",
+      "description": "Gathers context, discovers options, identifies trade-offs",
+      "shared_skills": ["code-search", "issue-lookup", "docs-search", "pattern-analysis", "context-retrieval", "token-estimate"],
+      "unique_skills": [
+        {
+          "id": "trade-off-analysis",
+          "description": "Compare implementation approaches with pros/cons",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "problem + options",
+            "output": "comparison matrix with trade-offs",
+            "timeout": "60 seconds"
+          }
+        },
+        {
+          "id": "prior-solution-finder",
+          "description": "Find similar solved problems in issue history",
+          "implementation": "scripts/knowledge-search.sh + issue-lookup",
+          "usage": {
+            "input": "problem description",
+            "output": "prior issues with solutions",
+            "timeout": "30 seconds"
+          }
+        },
+        {
+          "id": "requirements-extraction",
+          "description": "Extract requirements and constraints from task",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "task description",
+            "output": "structured requirements, constraints, success criteria",
+            "timeout": "30 seconds"
+          }
+        }
+      ]
+    },
+
+    "implementer": {
+      "role": "Forge",
+      "description": "Drafts safe, minimal, testable changes",
+      "shared_skills": ["code-search", "pattern-analysis", "context-retrieval", "dependency-check", "token-estimate"],
+      "unique_skills": [
+        {
+          "id": "code-generation",
+          "description": "Generate code changes aligned with patterns",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "file + change description",
+            "output": "generated code diff",
+            "timeout": "120 seconds"
+          }
+        },
+        {
+          "id": "test-generation",
+          "description": "Generate unit/integration tests for changes",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "code change + test framework",
+            "output": "test cases",
+            "timeout": "60 seconds"
+          }
+        },
+        {
+          "id": "refactor-suggestion",
+          "description": "Suggest minimal safe refactoring",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "code snippet",
+            "output": "refactoring options",
+            "timeout": "30 seconds"
+          }
+        },
+        {
+          "id": "change-validation",
+          "description": "Validate change for syntax, imports, compatibility",
+          "implementation": "language-specific linters + local-analyze.sh",
+          "usage": {
+            "input": "file + changes",
+            "output": "validation report",
+            "timeout": "30 seconds"
+          }
+        },
+        {
+          "id": "build-test",
+          "description": "Run build/tests on proposed changes",
+          "implementation": "bash + npm/python runners",
+          "usage": {
+            "input": "files changed",
+            "output": "build result, test results",
+            "timeout": "180 seconds"
+          }
+        }
+      ]
+    },
+
+    "reviewer-quality": {
+      "role": "Lens",
+      "description": "Validates correctness, tests, maintainability",
+      "shared_skills": ["code-search", "pattern-analysis", "context-retrieval", "dependency-check", "token-estimate"],
+      "unique_skills": [
+        {
+          "id": "correctness-check",
+          "description": "Identify logic bugs, edge cases, error handling",
+          "implementation": "prompt-based (LLM) + local-analyze.sh (risk-scan)",
+          "usage": {
+            "input": "code diff",
+            "output": "bug list with severity and fix suggestions",
+            "timeout": "60 seconds"
+          }
+        },
+        {
+          "id": "test-coverage-check",
+          "description": "Analyze test gaps and coverage needs",
+          "implementation": "prompt-based (LLM) + coverage tools",
+          "usage": {
+            "input": "code changes + existing tests",
+            "output": "test gap analysis",
+            "timeout": "60 seconds"
+          }
+        },
+        {
+          "id": "regression-detection",
+          "description": "Identify potential regressions and impacts",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "code changes + related code",
+            "output": "regression risk assessment",
+            "timeout": "60 seconds"
+          }
+        },
+        {
+          "id": "maintainability-review",
+          "description": "Check for clarity, documentation, future-proofing",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "code diff",
+            "output": "maintainability issues and suggestions",
+            "timeout": "45 seconds"
+          }
+        },
+        {
+          "id": "performance-analysis",
+          "description": "Identify performance issues and optimizations",
+          "implementation": "prompt-based (LLM) + profile tools",
+          "usage": {
+            "input": "code snippet",
+            "output": "performance risks and optimizations",
+            "timeout": "45 seconds"
+          }
+        }
+      ]
+    },
+
+    "reviewer-security": {
+      "role": "Sentinel",
+      "description": "Validates auth, secrets, boundaries, abuse paths",
+      "shared_skills": ["code-search", "issue-lookup", "context-retrieval", "dependency-check", "token-estimate"],
+      "unique_skills": [
+        {
+          "id": "auth-check",
+          "description": "Identify authentication/authorization flaws",
+          "implementation": "prompt-based (LLM) + local-analyze.sh (risk-scan)",
+          "usage": {
+            "input": "code diff",
+            "output": "auth vulnerabilities with exploitability",
+            "timeout": "60 seconds"
+          }
+        },
+        {
+          "id": "injection-detection",
+          "description": "Find SQL, XSS, command injection risks",
+          "implementation": "prompt-based (LLM) + static analysis patterns",
+          "usage": {
+            "input": "code snippet",
+            "output": "injection risks with context",
+            "timeout": "45 seconds"
+          }
+        },
+        {
+          "id": "secret-scan",
+          "description": "Detect hardcoded secrets, API keys, credentials",
+          "implementation": "regex patterns + truffleHog-style scanning",
+          "usage": {
+            "input": "code files",
+            "output": "secret findings",
+            "timeout": "30 seconds"
+          }
+        },
+        {
+          "id": "privilege-boundary-check",
+          "description": "Verify authorization boundaries and role checks",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "code diff + role definitions",
+            "output": "privilege escalation risks",
+            "timeout": "45 seconds"
+          }
+        },
+        {
+          "id": "cve-check",
+          "description": "Check dependencies for known CVEs",
+          "implementation": "npm audit, pip check, safety",
+          "usage": {
+            "input": "dependency file",
+            "output": "CVE list with severity",
+            "timeout": "60 seconds"
+          }
+        },
+        {
+          "id": "data-exposure-check",
+          "description": "Find data leakage in logs, errors, storage",
+          "implementation": "prompt-based (LLM) + pattern search",
+          "usage": {
+            "input": "code snippet",
+            "output": "data exposure risks",
+            "timeout": "45 seconds"
+          }
+        }
+      ]
+    },
+
+    "ops": {
+      "role": "Anchor",
+      "description": "Validates reliability, recovery, automation safety",
+      "shared_skills": ["code-search", "issue-lookup", "docs-search", "dependency-check", "token-estimate"],
+      "unique_skills": [
+        {
+          "id": "failure-mode-analysis",
+          "description": "Identify failure scenarios and recovery paths",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "code change + system context",
+            "output": "failure modes with mitigation",
+            "timeout": "60 seconds"
+          }
+        },
+        {
+          "id": "idempotency-check",
+          "description": "Verify operations are idempotent (safe retries)",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "code snippet",
+            "output": "idempotency analysis",
+            "timeout": "30 seconds"
+          }
+        },
+        {
+          "id": "observability-check",
+          "description": "Ensure adequate logging and monitoring hooks",
+          "implementation": "prompt-based (LLM) + pattern search",
+          "usage": {
+            "input": "code diff",
+            "output": "logging/monitoring gaps",
+            "timeout": "45 seconds"
+          }
+        },
+        {
+          "id": "scaling-analysis",
+          "description": "Analyze resource usage and scaling implications",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "code change + deployment context",
+            "output": "scaling risks and limits",
+            "timeout": "45 seconds"
+          }
+        },
+        {
+          "id": "automation-safety-check",
+          "description": "Verify automation has guardrails and safeguards",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "automation script",
+            "output": "safety gaps and recommendations",
+            "timeout": "45 seconds"
+          }
+        },
+        {
+          "id": "deployment-plan",
+          "description": "Create deployment strategy with rollback",
+          "implementation": "prompt-based (LLM)",
+          "usage": {
+            "input": "code change + environment info",
+            "output": "deployment steps + rollback plan",
+            "timeout": "60 seconds"
+          }
+        }
+      ]
+    }
+  },
+
+  "skill_invocation": {
+    "protocol": "HTTP POST to skill executor service",
+    "format": {
+      "workflow_id": "string",
+      "agent_id": "string",
+      "phase": "integer",
+      "skill_id": "string",
+      "input": "object or string",
+      "timeout": "integer seconds"
+    },
+    "response": {
+      "skill_id": "string",
+      "status": "success|error|timeout",
+      "output": "object or string",
+      "execution_time_ms": "integer",
+      "cached": "boolean"
+    },
+    "caching": {
+      "enabled": true,
+      "key": "skill_id:hash(input)",
+      "ttl_seconds": 3600
+    }
+  },
+
+  "skill_dependencies": {
+    "code-generation": ["code-search", "pattern-analysis"],
+    "test-generation": ["code-search", "pattern-analysis"],
+    "correctness-check": ["code-search", "pattern-analysis", "context-retrieval"],
+    "regression-detection": ["code-search", "issue-lookup"],
+    "auth-check": ["code-search", "pattern-analysis", "context-retrieval"],
+    "injection-detection": ["code-search", "pattern-analysis"],
+    "failure-mode-analysis": ["code-search", "docs-search"]
+  },
+
+  "execution_order": {
+    "phase_1_intake": [
+      {"agent": "all", "skill": "requirements-extraction", "parallel": false}
+    ],
+    "phase_2_research": [
+      {"agent": "researcher", "skill": "code-search", "parallel": false},
+      {"agent": "researcher", "skill": "issue-lookup", "parallel": true},
+      {"agent": "researcher", "skill": "docs-search", "parallel": true},
+      {"agent": "researcher", "skill": "prior-solution-finder", "parallel": true},
+      {"agent": "researcher", "skill": "trade-off-analysis", "parallel": false, "depends_on": ["code-search", "issue-lookup"]}
+    ],
+    "phase_3_plan": [
+      {"agent": "implementer", "skill": "code-generation", "parallel": false},
+      {"agent": "implementer", "skill": "test-generation", "parallel": true},
+      {"agent": "implementer", "skill": "change-validation", "parallel": false},
+      {"agent": "implementer", "skill": "build-test", "parallel": false}
+    ],
+    "phase_4_quality_review": [
+      {"agent": "reviewer-quality", "skill": "correctness-check", "parallel": false},
+      {"agent": "reviewer-quality", "skill": "test-coverage-check", "parallel": true},
+      {"agent": "reviewer-quality", "skill": "regression-detection", "parallel": true},
+      {"agent": "reviewer-quality", "skill": "maintainability-review", "parallel": true},
+      {"agent": "reviewer-quality", "skill": "performance-analysis", "parallel": true}
+    ],
+    "phase_5_security_review": [
+      {"agent": "reviewer-security", "skill": "auth-check", "parallel": false},
+      {"agent": "reviewer-security", "skill": "injection-detection", "parallel": true},
+      {"agent": "reviewer-security", "skill": "secret-scan", "parallel": true},
+      {"agent": "reviewer-security", "skill": "privilege-boundary-check", "parallel": true},
+      {"agent": "reviewer-security", "skill": "cve-check", "parallel": true},
+      {"agent": "reviewer-security", "skill": "data-exposure-check", "parallel": true}
+    ],
+    "phase_6_ops_review": [
+      {"agent": "ops", "skill": "failure-mode-analysis", "parallel": false},
+      {"agent": "ops", "skill": "idempotency-check", "parallel": true},
+      {"agent": "ops", "skill": "observability-check", "parallel": true},
+      {"agent": "ops", "skill": "scaling-analysis", "parallel": true},
+      {"agent": "ops", "skill": "automation-safety-check", "parallel": true},
+      {"agent": "ops", "skill": "deployment-plan", "parallel": true}
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "example-token-race-condition",
+  "title": "Fix token refresh race condition",
+  "description": "Users report random 401 errors after token refresh in mobile app",
+  "context": {
+    "priority": "high",
+    "impact": "5% of daily active users affected",
+    "regression_from": "PR #456",
+    "symptoms": "Mobile app shows 401 Unauthorized after successful token refresh",
+    "duration": "Ongoing since PR merged 3 days ago"
+  },
+  "code_snippet": {
+    "file": "src/auth/token-refresh.ts",
+    "language": "typescript",
+    "content": "export async function refreshToken(req: Request, res: Response) {\n  const { refresh_token } = req.body;\n  try {\n    const decoded = jwt.verify(refresh_token, SECRET);\n    const newToken = jwt.sign({ uid: decoded.uid }, SECRET, { expiresIn: '1h' });\n    res.json({ access_token: newToken });\n  } catch (err) {\n    res.status(401).json({ error: 'Invalid token' });\n  }\n}\n"
+  },
+  "related_issues": [
+    "#456 - Add token refresh endpoint",
+    "#423 - Mobile auth improvements"
+  ],
+  "success_criteria": [
+    "All users can refresh tokens without 401",
+    "Token refresh is idempotent (same result on retry)",
+    "Rate limiting is in place (prevent brute force)",
+    "Test coverage includes concurrent refresh scenario"
+  ],
+  "estimated_scope": "small",
+  "notes": "Likely race condition when multiple concurrent refresh attempts hit the endpoint simultaneously"
+}

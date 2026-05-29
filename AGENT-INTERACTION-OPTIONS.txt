@@ -1,0 +1,80 @@
+# ⚡ Agent Interaction Options - Quick Summary
+
+## Current Design
+**5 agents in 5 separate tmux panes (parallel)**
+- Fast (~300-600s per task)
+- Parallel execution
+- Independent failures
+- Visual monitoring
+- Requires tmux
+
+---
+
+## Option 1: Sequential Single Pane
+**All agents in one terminal, run one at a time**
+```
+Researcher → Implementer → Lens → Sentinel → Anchor → Consensus
+```
+- Simple (no tmux)
+- Easy to debug
+- Much slower (~3-5 hours per task)
+- No parallelism
+
+**Implementation**: 1-2 hours (modify orchestrator)
+
+---
+
+## Option 2: Agents as Subagents ⭐
+**Agents can call other agents for consultation**
+```
+Researcher asks: "Is this feasible, Implementer?"
+Implementer asks: "Is this secure, Sentinel?"
+Sentinel asks: "Does this break anything, Lens?"
+```
+- Rich collaboration
+- Better decisions (agents help each other)
+- Slower (more LLM calls)
+- Complex to implement
+
+**Implementation**: 4-6 hours (messaging + call rules)
+
+**Cost**: +20% LLM calls (more API usage)
+
+---
+
+## Option 3: Hybrid
+**Multiple agents per pane, some parallel**
+- Moderate complexity
+- Some parallelism
+- Mixed benefits
+
+**Implementation**: 2-3 hours
+
+---
+
+## Decision for Phase 4
+
+| Choice | Pro | Con | Time |
+|--------|-----|-----|------|
+| **Keep Current (5 panes)** | Fast, parallel, tested | Need tmux | 0h |
+| **Sequential (1 pane)** | Simple, easy debug | Slow (hours) | 1-2h |
+| **Subagents** | Better collaboration | Complex, slower, +cost | 4-6h |
+
+---
+
+## Recommendation
+
+✅ **For Phase 4**: Keep current design (5 panes)
+- Fast
+- Already documented
+- No changes needed
+- Focus on LLM integration
+
+⏳ **After Phase 4 works**: Consider subagents (Phase 4.5)
+- Enhanced collaboration
+- Better decision quality
+- Not critical for MVP
+
+---
+
+**Bottom Line**: Subagents = Yes, possible. Will they work? Yes. Should you do it in Phase 4? No - too many changes. Do it after Phase 4 works.

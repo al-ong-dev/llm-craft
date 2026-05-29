@@ -1,0 +1,122 @@
+{
+  "version": "1.0",
+  "description": "Multi-Agent Consensus Protocol",
+  
+  "agents": [
+    { "id": "researcher", "role": "Pathfinder", "timeout_sec": 300 },
+    { "id": "implementer", "role": "Forge", "timeout_sec": 300 },
+    { "id": "reviewer-quality", "role": "Lens", "timeout_sec": 300 },
+    { "id": "reviewer-security", "role": "Sentinel", "timeout_sec": 300 },
+    { "id": "ops", "role": "Anchor", "timeout_sec": 300 }
+  ],
+
+  "workflow_phases": [
+    { "phase": 1, "name": "intake", "description": "Parse task, create context" },
+    { "phase": 2, "name": "research", "description": "Gather context and present options" },
+    { "phase": 3, "name": "plan", "description": "Draft implementation plan" },
+    { "phase": 4, "name": "quality_review", "description": "Check correctness, tests, maintainability" },
+    { "phase": 5, "name": "security_review", "description": "Check auth, secrets, boundaries" },
+    { "phase": 6, "name": "ops_review", "description": "Check reliability, recovery, automation safety" },
+    { "phase": 7, "name": "decision", "description": "Unanimous vote to proceed or escalate" },
+    { "phase": 8, "name": "execute", "description": "Implement changes (if consensus)" },
+    { "phase": 9, "name": "verify", "description": "All agents validate output" }
+  ],
+
+  "agent_opinion": {
+    "description": "Opinion message from an agent",
+    "schema": {
+      "workflow_id": "string (uuid)",
+      "phase": "integer (1-9)",
+      "agent_id": "string (researcher|implementer|reviewer-quality|reviewer-security|ops)",
+      "timestamp": "ISO8601 datetime",
+      "status": "pending|submitted|accepted|skipped",
+      "decision": "proceed|escalate|needs_info|blocked",
+      "confidence": "high|medium|low",
+      "rationale": "string (detailed explanation)",
+      "findings": "array of string (issues/risks/recommendations)",
+      "questions": "array of string (open questions for other agents)"
+    },
+    "example": {
+      "workflow_id": "wf-20260528-001",
+      "phase": 2,
+      "agent_id": "researcher",
+      "timestamp": "2026-05-28T15:02:43Z",
+      "status": "submitted",
+      "decision": "proceed",
+      "confidence": "high",
+      "rationale": "Context found in prior issues #123 and #456. Pattern well-established.",
+      "findings": [
+        "Similar auth middleware exists in src/middleware/auth.ts",
+        "3 prior attempts found in issues, 2 succeeded"
+      ],
+      "questions": []
+    }
+  },
+
+  "consensus_vote": {
+    "description": "Aggregated vote across all agents",
+    "schema": {
+      "workflow_id": "string (uuid)",
+      "phase": "integer (1-9)",
+      "timestamp": "ISO8601 datetime",
+      "votes": "array of agent_opinion",
+      "consensus_reached": "boolean",
+      "consensus_decision": "proceed|escalate|blocked",
+      "unanimous": "boolean",
+      "dissenting_agents": "array of string (agent_ids)",
+      "dissent_reasons": "array of string (why they disagreed)"
+    },
+    "consensus_rules": {
+      "rule": "UNANIMOUS",
+      "definition": "All 5 agents must vote 'proceed' to continue",
+      "failure_actions": [
+        "If any agent votes 'escalate': workflow escalates + postpones",
+        "If any agent votes 'blocked': workflow escalates + postpones",
+        "If any agent times out: treated as 'blocked', escalate",
+        "If any agent votes 'needs_info': re-loop that phase only"
+      ]
+    }
+  },
+
+  "escalation": {
+    "description": "When consensus cannot be reached",
+    "schema": {
+      "workflow_id": "string (uuid)",
+      "phase_reached": "integer (1-9)",
+      "escalation_reason": "timeout|dissent|agent_failure|no_consensus",
+      "agent_status": {
+        "agent_id": "string",
+        "vote": "proceed|escalate|blocked|timeout",
+        "rationale": "string"
+      },
+      "postponed_until": "ISO8601 datetime or 'manual_review'",
+      "human_action_required": "boolean",
+      "investigation_needed": "array of string (topics to investigate)"
+    },
+    "example": {
+      "workflow_id": "wf-20260528-001",
+      "phase_reached": 5,
+      "escalation_reason": "dissent",
+      "agent_status": [
+        { "agent_id": "reviewer-security", "vote": "blocked", "rationale": "Token refresh lacks rate-limit check" },
+        { "agent_id": "reviewer-quality", "vote": "proceed", "rationale": "Logic correct, tests adequate" }
+      ],
+      "postponed_until": "manual_review",
+      "human_action_required": true,
+      "investigation_needed": [
+        "Add rate-limit middleware to token refresh endpoint",
+        "Reconcile security-quality disagreement"
+      ]
+    }
+  },
+
+  "resumption": {
+    "description": "How to resume a postponed workflow",
+    "process": [
+      "Load workflow context from last agreed phase",
+      "Present human override or modifications",
+      "Restart from last phase or from escalation phase",
+      "Re-run consensus with updated context"
+    ]
+  }
+}
