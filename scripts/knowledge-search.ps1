@@ -29,49 +29,76 @@ function Build-TF {
     return $map
 }
 
+function ConvertFrom-JsonSafe {
+    param([string]$Json)
+
+    $command = Get-Command ConvertFrom-Json
+    if ($command.Parameters.ContainsKey("AsHashtable")) {
+        return $Json | ConvertFrom-Json -AsHashtable
+    }
+
+    return $Json | ConvertFrom-Json
+}
+
+function Get-JsonValue {
+    param(
+        [object]$Object,
+        [string]$Name
+    )
+
+    if ($Object -is [System.Collections.IDictionary]) {
+        return $Object[$Name]
+    }
+
+    return $Object.$Name
+}
+
 $docs = New-Object System.Collections.Generic.List[object]
 $id = 0
 
 if (Test-Path -LiteralPath $CodeIndexPath) {
-    $code = ([System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $CodeIndexPath))) | ConvertFrom-Json -Depth 12
-    foreach ($c in $code.chunks) {
+    $code = ConvertFrom-JsonSafe -Json ([System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $CodeIndexPath)))
+    foreach ($c in (Get-JsonValue -Object $code -Name "chunks")) {
+        $relFile = Get-JsonValue -Object $c -Name "relFile"
+        $startLine = Get-JsonValue -Object $c -Name "startLine"
+        $endLine = Get-JsonValue -Object $c -Name "endLine"
         [void]$docs.Add([pscustomobject]@{
             id    = $id
             type  = "code"
-            title = "{0}:{1}-{2}" -f $c.relFile, $c.startLine, $c.endLine
-            path  = $c.relFile
+            title = ("{0}:{1}-{2}" -f $relFile, $startLine, $endLine)
+            path  = $relFile
             url   = ""
-            text  = [string]$c.content
+            text  = [string](Get-JsonValue -Object $c -Name "content")
         })
         $id += 1
     }
 }
 
 if (Test-Path -LiteralPath $JiraPath) {
-    $jira = ([System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $JiraPath))) | ConvertFrom-Json -Depth 10
-    foreach ($j in $jira.items) {
+    $jira = ConvertFrom-JsonSafe -Json ([System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $JiraPath)))
+    foreach ($j in (Get-JsonValue -Object $jira -Name "items")) {
         [void]$docs.Add([pscustomobject]@{
             id    = $id
             type  = "jira"
-            title = [string]$j.summary
-            path  = [string]$j.key
-            url   = [string]$j.url
-            text  = [string]$j.text
+            title = [string](Get-JsonValue -Object $j -Name "summary")
+            path  = [string](Get-JsonValue -Object $j -Name "key")
+            url   = [string](Get-JsonValue -Object $j -Name "url")
+            text  = [string](Get-JsonValue -Object $j -Name "text")
         })
         $id += 1
     }
 }
 
 if (Test-Path -LiteralPath $ConfluencePath) {
-    $conf = ([System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $ConfluencePath))) | ConvertFrom-Json -Depth 10
-    foreach ($p in $conf.items) {
+    $conf = ConvertFrom-JsonSafe -Json ([System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $ConfluencePath)))
+    foreach ($p in (Get-JsonValue -Object $conf -Name "items")) {
         [void]$docs.Add([pscustomobject]@{
             id    = $id
             type  = "confluence"
-            title = [string]$p.title
-            path  = [string]$p.space
-            url   = [string]$p.url
-            text  = [string]$p.text
+            title = [string](Get-JsonValue -Object $p -Name "title")
+            path  = [string](Get-JsonValue -Object $p -Name "space")
+            url   = [string](Get-JsonValue -Object $p -Name "url")
+            text  = [string](Get-JsonValue -Object $p -Name "text")
         })
         $id += 1
     }
@@ -123,7 +150,7 @@ foreach ($term in $qtf.Keys) {
 $byId = @{}
 foreach ($d in $docs) { $byId[$d.id] = $d }
 
-$top = foreach ($pair in $scores.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First $Top) {
+$topResults = foreach ($pair in $scores.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First $Top) {
     $d = $byId[[int]$pair.Key]
     [pscustomobject]@{
         score        = [Math]::Round([double]$pair.Value, 5)
@@ -139,5 +166,5 @@ $top = foreach ($pair in $scores.GetEnumerator() | Sort-Object Value -Descending
 [pscustomobject]@{
     query = $Query
     corpusSize = $docs.Count
-    top = $top
+    top = @($topResults)
 } | ConvertTo-Json -Depth 6

@@ -46,6 +46,34 @@ function Get-Terms {
     return $terms
 }
 
+function Get-RelativePathCompat {
+    param(
+        [string]$BasePath,
+        [string]$TargetPath
+    )
+
+    $method = [System.IO.Path].GetMethods() |
+        Where-Object { $_.Name -eq "GetRelativePath" -and $_.GetParameters().Count -eq 2 } |
+        Select-Object -First 1
+
+    if ($method) {
+        return [System.IO.Path]::GetRelativePath($BasePath, $TargetPath)
+    }
+
+    $baseFull = [System.IO.Path]::GetFullPath($BasePath)
+    if (-not $baseFull.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+        $baseFull += [System.IO.Path]::DirectorySeparatorChar
+    }
+
+    $targetFull = [System.IO.Path]::GetFullPath($TargetPath)
+    $baseUri = New-Object System.Uri($baseFull)
+    $targetUri = New-Object System.Uri($targetFull)
+    $relativeUri = $baseUri.MakeRelativeUri($targetUri)
+    $relativePath = [System.Uri]::UnescapeDataString($relativeUri.ToString())
+
+    return $relativePath -replace '/', [System.IO.Path]::DirectorySeparatorChar
+}
+
 function New-Chunks {
     param(
         [string]$Text,
@@ -118,7 +146,7 @@ foreach ($file in $files) {
             $tf[$term] += 1
         }
 
-        $distinct = $tf.Keys
+        $distinct = @($tf.Keys | ForEach-Object { [string]$_ })
         foreach ($term in $distinct) {
             if (-not $postings.ContainsKey($term)) {
                 $postings[$term] = New-Object System.Collections.Generic.List[object]
@@ -135,7 +163,7 @@ foreach ($file in $files) {
         [void]$chunks.Add([pscustomobject]@{
             id        = $chunkId
             file      = $file.FullName
-            relFile   = [System.IO.Path]::GetRelativePath($root, $file.FullName)
+            relFile   = Get-RelativePathCompat -BasePath $root -TargetPath $file.FullName
             startLine = $c.startLine
             endLine   = $c.endLine
             length    = $terms.Count

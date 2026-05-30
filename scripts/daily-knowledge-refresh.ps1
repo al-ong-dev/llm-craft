@@ -61,7 +61,7 @@ foreach ($q in $Queries) {
         Top = $TopPerQuery
     }
 
-    $parsed = $json | ConvertFrom-Json -Depth 10
+    $parsed = $json | ConvertFrom-Json
     [void]$signals.Add([pscustomobject]@{
         query = $q
         top = $parsed.top

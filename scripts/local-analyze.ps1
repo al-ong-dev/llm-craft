@@ -59,7 +59,7 @@ if (-not (Test-Path -LiteralPath $searchScript)) {
 }
 
 $searchJson = & $searchScript -Query $Query -IndexPath $IndexPath -Top $TopBlocks -AsCodeBlock
-$search = $searchJson | ConvertFrom-Json -Depth 10
+$search = $searchJson | ConvertFrom-Json
 $blocks = @($search.top)
 
 if ($blocks.Count -eq 0) {
@@ -103,7 +103,7 @@ try {
         -ReserveForResponse $ReserveForResponse `
         -Temperature $Temperature
 
-    $ollama = $ollamaJson | ConvertFrom-Json -Depth 10
+    $ollama = $ollamaJson | ConvertFrom-Json
 }
 finally {
     if (Test-Path -LiteralPath $tmpContext) { Remove-Item -LiteralPath $tmpContext -Force }

@@ -40,7 +40,7 @@ $knowledgeJson = Invoke-LocalScript -ScriptName "knowledge-search.ps1" -Params @
     ConfluencePath = $ConfluencePath
     Top = $TopKnowledge
 }
-$knowledge = $knowledgeJson | ConvertFrom-Json -Depth 10
+$knowledge = $knowledgeJson | ConvertFrom-Json
 
 Write-Host "2/3 Running retrieval-grounded local analysis..."
 $instruction = @"
@@ -72,7 +72,7 @@ $localJson = Invoke-LocalScript -ScriptName "local-analyze.ps1" -Params @{
     ReserveForResponse = $ReserveForResponse
     Temperature = $Temperature
 }
-$local = $localJson | ConvertFrom-Json -Depth 12
+$local = $localJson | ConvertFrom-Json
 
 Write-Host "3/3 Writing triage report..."
 $result = [pscustomobject]@{
